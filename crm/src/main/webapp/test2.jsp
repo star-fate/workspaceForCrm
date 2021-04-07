@@ -11,10 +11,11 @@
             request.getServerName() +":"+request.getServerPort()
             +request.getContextPath()+"/";
 %>
+<!DOCTYPE html>
 <html>
-
 <head>
     <base href="<%=basePath%>">
+    <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>

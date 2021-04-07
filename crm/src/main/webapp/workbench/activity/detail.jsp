@@ -218,7 +218,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					html += '</div>';
 					html += '</div>';
 					html += '</div>';
-
 				})
 
 				$("#remarkDiv").before(html);
