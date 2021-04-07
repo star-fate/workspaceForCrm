@@ -1,20 +1,18 @@
-package com.bjpower.crm.activity.service.impl;
+package com.bjpower.crm.workbench.service.impl;
 
-import com.bjpower.crm.activity.dao.ActivityDao;
-import com.bjpower.crm.activity.dao.ActivityRemarkDao;
-import com.bjpower.crm.activity.domain.Activity;
-import com.bjpower.crm.activity.domain.ActivityRemark;
-import com.bjpower.crm.activity.service.ActivityService;
+import com.bjpower.crm.workbench.dao.ActivityDao;
+import com.bjpower.crm.workbench.dao.ActivityRemarkDao;
+import com.bjpower.crm.workbench.domain.Activity;
+import com.bjpower.crm.workbench.domain.ActivityRemark;
+import com.bjpower.crm.workbench.service.ActivityService;
 import com.bjpower.crm.settings.dao.UserDao;
 import com.bjpower.crm.settings.domain.User;
 import com.bjpower.crm.utils.SqlSessionUtil;
 import com.bjpower.crm.vo.PaginationVo;
 
-import java.awt.geom.FlatteningPathIterator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 public class ActivityServiceImpl implements ActivityService{
     private ActivityDao activityDao = SqlSessionUtil.getSession().getMapper(ActivityDao.class);

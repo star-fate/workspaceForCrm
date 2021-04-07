@@ -38,7 +38,7 @@ request.getServerName() +":"+request.getServerPort()
 		});
 		
 		
-		window.open("workbench/main/index.jsp","workareaFrame");
+		window.open("workbench/main/index.html","workareaFrame");
 		
 	});
 	

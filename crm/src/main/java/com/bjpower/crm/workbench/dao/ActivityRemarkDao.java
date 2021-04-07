@@ -1,6 +1,6 @@
-package com.bjpower.crm.activity.dao;
+package com.bjpower.crm.workbench.dao;
 
-import com.bjpower.crm.activity.domain.ActivityRemark;
+import com.bjpower.crm.workbench.domain.ActivityRemark;
 
 import java.util.List;
 

@@ -9,7 +9,7 @@
   <typeAliases>
     <!--配置domain 别名-->
   	<package name="com.bjpower.crm.settings.domain"/>
-  	<package name="com.bjpower.crm.activity.domain"/>
+  	<package name="com.bjpower.crm.workbench.domain"/>
 
   </typeAliases>
   
@@ -29,7 +29,7 @@
   <mappers>
       <!--配置映射文件-->
       <package name="com.bjpower.crm.settings.dao"/>
-      <package name="com.bjpower.crm.activity.dao"/>
+      <package name="com.bjpower.crm.workbench.dao"/>
     
   </mappers>
 </configuration>

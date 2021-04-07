@@ -1,4 +1,4 @@
-package com.bjpower.crm.activity.domain;
+package com.bjpower.crm.workbench.domain;
 
 public class ActivityRemark {
     private  String id;
