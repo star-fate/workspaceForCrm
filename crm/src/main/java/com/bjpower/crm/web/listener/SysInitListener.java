@@ -1,5 +1,6 @@
 package com.bjpower.crm.web.listener;
 
+import com.bjpower.crm.settings.domain.DicType;
 import com.bjpower.crm.settings.domain.DicValue;
 import com.bjpower.crm.settings.service.DicService;
 import com.bjpower.crm.settings.service.impl.DicServiceImpl;
@@ -21,12 +22,12 @@ public class SysInitListener implements ServletContextListener {
 
         //获取全局作用域对象
         ServletContext application = event.getServletContext();
-        /*
-        获取数据——> 分析数据类型
 
-        将其封装为 Map<String,List<DicValue>>
-        String 为 DicType 的每一种 数据 code
-         */
+        //获取数据——> 分析数据类型
+
+        //将其封装为 Map<String,List<DicValue>>
+        //String 为 DicType 的每一种 数据 code
+
         //获取数据
         DicService ds = (DicService) serviceFactory.getService(new DicServiceImpl());
         Map<String, List<DicValue>> map = ds.getAll();
