@@ -1,7 +1,5 @@
 package com.bjpower.crm.settings.domain;
 
-import java.lang.ref.SoftReference;
-
 public class DicType {
     private String code;
     private String name;

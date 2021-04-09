@@ -29,7 +29,7 @@ public class ClueController extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("进入到线索控制器");
         String path = request.getServletPath();
-        if ("/workbench/clue/+++.do".equals(path)) {
+        if ("/workbench/clue/***.do".equals(path)) {
             //+++(request,response);
         }
     }
