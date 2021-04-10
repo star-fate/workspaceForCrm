@@ -65,5 +65,40 @@ $("#activityBody").on("click",$("input[name=xz]"),function () {
 $("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length)
 })
 //复选框---end
+
+
+//jstl
+<c:forEach items="clueStateList" var="clueState">
+    <option value="${clueState.value}">${clueState.text}</option>
+</c:forEach>
+
+
+//计算总页数--只有值全部传入才能运行（确信）
+var totalPages = Math.ceil(data.total / pageSize);
+//数据处理完毕后，结合分页查询插件 对前端进行分页展示
+$("#activityPage").bs_pagination({
+currentPage: pageNo, // 页码
+rowsPerPage: pageSize, // 每页显示的记录条数
+maxRowsPerPage: 20, // 每页最多显示的记录条数
+totalPages: totalPages, // 总页数
+totalRows: data.total, // 总记录条数
+
+visiblePageLinks: 3, // 显示几个卡片
+
+showGoToPage: true,
+showRowsPerPage: true,
+showRowsInfo: true,
+showRowsDefaultInfo: true,
+
+onChangePage: function (event, data) {
+pageList(data.currentPage, data.rowsPerPage);
+}
+})
+
+
+
+pageList($("#xxxPage").bs_pagination('getOption', 'currentPage')
+,$("#xxxPage").bs_pagination('getOption', 'rowsPerPage'));
+
 </body>
 </html>

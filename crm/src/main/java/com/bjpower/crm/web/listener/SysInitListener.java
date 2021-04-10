@@ -33,6 +33,7 @@ public class SysInitListener implements ServletContextListener {
         Map<String, List<DicValue>> map = ds.getAll();
         Set<String> set = map.keySet();
         for (String key:set ){
+            //键名为  code+"List"
             application.setAttribute(key,map.get(key));
         }
         System.out.println("上下文/全局作用域被创建成功了，数据添加成功");
