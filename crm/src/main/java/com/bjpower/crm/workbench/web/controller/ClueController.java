@@ -41,7 +41,64 @@ public class ClueController extends HttpServlet {
             pageList(request,response);
         }else if ("/workbench/clue/getUserListAndClue.do".equals(path)){
             getUserListAndClue(request,response);
+        }else if ("/workbench/clue/update.do".equals(path)){
+            update(request,response);
+        }else if ("/workbench/clue/delete.do".equals(path)){
+            delete(request,response);
         }
+    }
+    private void delete(HttpServletRequest request, HttpServletResponse response){
+        System.out.println("进入到删除线索操作中");
+        String[] ids = request.getParameterValues("id");
+        ClueService cs = (ClueService) serviceFactory.getService(new ClueServiceImpl());
+        boolean flag = cs.delete(ids);
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入到修改线索操作中");
+        ClueService cs = (ClueService) serviceFactory.getService(new ClueServiceImpl());
+        String id = request.getParameter("id");
+        String fullname = request.getParameter("fullname");
+        String appellation = request.getParameter("appellation");
+        String owner = request.getParameter("owner");
+        String company = request.getParameter("company");
+        String job = request.getParameter("job");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String website = request.getParameter("website");
+        String mphone = request.getParameter("mphone");
+        String state = request.getParameter("state");
+        String source = request.getParameter("source");
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editTime = DateTimeUtil.getSysTime();
+        String description = request.getParameter("description");
+        String contactSummary = request.getParameter("contactSummary");
+        String nextContactTime = request.getParameter("nextContactTime");
+        String address = request.getParameter("address");
+
+        Clue c = new Clue();
+        c.setId(id);
+        c.setFullname(fullname);
+        c.setAppellation(appellation);
+        c.setOwner(owner);
+        c.setCompany(company);
+        c.setJob(job);
+        c.setEmail(email);
+        c.setPhone(phone);
+        c.setWebsite(website);
+        c.setMphone(mphone);
+        c.setState(state);
+        c.setSource(source);
+        c.setEditBy(editBy);
+        c.setEditTime(editTime);
+        c.setDescription(description);
+        c.setContactSummary(contactSummary);
+        c.setNextContactTime(nextContactTime);
+        c.setAddress(address);
+        boolean flag = cs.update(c);
+        PrintJson.printJsonFlag(response,flag);
+
     }
 
     private void getUserListAndClue(HttpServletRequest request, HttpServletResponse response) {

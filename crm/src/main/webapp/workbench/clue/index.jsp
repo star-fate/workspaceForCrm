@@ -59,10 +59,9 @@ request.getServerName() +":"+request.getServerPort()
 				}
 			})
 		})
-		//保存数据按钮
+		//保存数据
 		$("#saveBtn").click(function () {
 
-			alert("添加数据");
 			//获取信息
 			$.ajax({
 				url:"workbench/clue/save.do",
@@ -121,6 +120,7 @@ request.getServerName() +":"+request.getServerPort()
 						})
 						$("#edit-owner").html(html);
 
+						$("#edit-id").val(data.clue.id)
 						$("#edit-owner").val(data.clue.owner)
 						$("#edit-fullname").val(data.clue.fullname)
 						$("#edit-appellation").val(data.clue.appellation)
@@ -142,6 +142,84 @@ request.getServerName() +":"+request.getServerPort()
 			}
 
 		})
+		//更新修改的数据
+		$("#updateBtn").click(function () {
+			//需求 将修改的数据更新到数据库
+			/*
+				需要取得的数据 首先包括 id
+				在 editBtn 点击操作中 将其ID保存在
+				隐藏域中
+			*/
+			$("#edit-id").val();
+			$.ajax({
+				url:"workbench/clue/update.do",
+				data:{
+					"id":$.trim($("#edit-id").val()),
+					"fullname":$.trim($("#edit-fullname").val()),
+					"appellation":$.trim($("#edit-appellation").val()),
+					"owner":$.trim($("#edit-owner").val()),
+					"company":$.trim($("#edit-company").val()),
+					"job":$.trim($("#edit-job").val()),
+					"email":$.trim($("#edit-email").val()),
+					"phone":$.trim($("#edit-phone").val()),
+					"website":$.trim($("#edit-website").val()),
+					"mphone":$.trim($("#edit-mphone").val()),
+					"state":$.trim($("#edit-state").val()),
+					"source":$.trim($("#edit-source").val()),
+					"description":$.trim($("#edit-description").val()),
+					"contactSummary":$.trim($("#edit-contactSummary").val()),
+					"nextContactTime":$.trim($("#edit-nextContactTime").val()),
+					"address":$.trim($("#edit-address").val())
+				},
+				type:"post",
+				dataType:"json",
+				success:function (data) {
+					//返回数据 success
+					if (data.success){
+						$("#editClueModal").modal("hide");
+						pageList($("#cluePage").bs_pagination('getOption', 'currentPage')
+								,$("#cluePage").bs_pagination('getOption', 'rowsPerPage'));
+					}else{
+						alert("修改线索失败")
+					}
+				}
+			})
+
+		})
+
+		//删除选择的数据
+		$("#deleteBtn").click(function () {
+			//首先先要获取所要删除数据的ID编号
+			var $xz = $("input[name=xz]:checked");
+			if ($xz.length == 0){
+				alert("请选择要删除的数据");
+			}
+			var pram = "";
+			for (i = 0;i<$xz.length;i++){
+				//当做是拼接 ？ 后面的字符串
+				pram += "id="+$xz[i].value;
+				if (i<$xz.length-1){
+					pram += "&";
+				}
+			}
+			$.ajax({
+				url:"workbench/clue/delete.do",
+				data:pram,
+				type:"post",
+				dataType:"json",
+				success:function (data) {
+					if (data.success){
+						pageList(1
+								,$("#cluePage").bs_pagination('getOption', 'rowsPerPage'));
+					}else {
+						alert("删除数据失败！")
+					}
+				}
+			})
+
+			alert(pram)
+
+		})
 		//根据条件查询数据-->向隐藏域中填写值，根据隐藏域来查询
 		$("#searchBtn").click(function () {
 			$("#hidden-fullname").val($.trim($("#search-fullname").val()));
@@ -161,6 +239,7 @@ request.getServerName() +":"+request.getServerPort()
 		$("#clueBody").on("click",$("input[name=xz]"),function () {
 			$("#qx").prop("checked",$("input[name=xz]:checked").length == $("input[name=xz]").length)
 		})
+
 	});
 	//展示clue数据的函数
 	function pageList(pageNo,pageSize) {
@@ -432,7 +511,7 @@ request.getServerName() +":"+request.getServerPort()
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" id="clueEditModal" role="form">
-					
+						<input type="hidden" id="edit-id">
 						<div class="form-group">
 							<label for="edit-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -693,7 +772,7 @@ request.getServerName() +":"+request.getServerPort()
 					--%>
 				  <button type="button" class="btn btn-primary" id="addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 				

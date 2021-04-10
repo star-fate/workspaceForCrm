@@ -15,4 +15,10 @@ public interface ClueDao {
     int getTotalByCondition(Map<String, Object> map);
 
     Clue getClueById(String cid);
+
+    int update(Clue c);
+
+    int deleteByCids(String[] ids);
+
+    int getCountByCids(String[] ids);
 }

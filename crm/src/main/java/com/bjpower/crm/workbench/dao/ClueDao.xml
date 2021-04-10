@@ -30,8 +30,6 @@
         from tbl_clue c
         where c.id = #{cid};
     </select>
-
-
     <select id="getTotalByCondition" resultType="int">
         select
         count(*)
@@ -110,6 +108,7 @@
                 and owner like '%' #{owner} '%'
             </if>
         </where>
+        order by c.createTime desc
         limit #{skipCount},#{pageSize};
     </select>
     <insert id="save">
@@ -156,7 +155,45 @@
             #{address}
         );
     </insert>
-  	
+    <update id="update">
+        update tbl_clue set
+            fullname = #{fullname},
+            appellation = #{appellation},
+            owner = #{owner},
+            company = #{company},
+            job = #{job},
+            email = #{email},
+            phone = #{phone},
+            website = #{website},
+            mphone = #{mphone},
+            state = #{state},
+            source = #{source},
+            editBy = #{editBy},
+            editTime = #{editTime},
+            description = #{description},
+            contactSummary = #{contactSummary},
+            nextContactTime = #{nextContactTime},
+            address = #{address}
+        where id = #{id}
+    </update>
+
+  	<delete id="deleteByCids">
+        delete from tbl_clue
+        where id in
+        <foreach collection="array" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+        ;
+    </delete>
+
+    <select id="getCountByCids" resultType="int">
+        select count(*) from tbl_clue
+        where id in
+        <foreach collection="array" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+        ;
+    </select>
 </mapper>
 
 

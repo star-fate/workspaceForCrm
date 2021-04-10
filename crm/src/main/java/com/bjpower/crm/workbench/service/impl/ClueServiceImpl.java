@@ -29,6 +29,17 @@ public class ClueServiceImpl implements ClueService {
     }
 
     @Override
+    public boolean update(Clue c) {
+        boolean flag = true;
+        int count = clueDao.update(c);
+        if (count != 1){
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    @Override
     public Map<String, Object> getUserListAndClue(String cid) {
         //返回数据需要 uList and  一条根据clueId查询的 clue
         List<User> uList = userDao.getUserList();
@@ -57,5 +68,17 @@ public class ClueServiceImpl implements ClueService {
     public List<User> getUserList() {
         List<User> uList = userDao.getUserList();
         return uList;
+    }
+
+    @Override
+    public boolean delete(String[] ids) {
+        boolean flag = true;
+        int count1 = clueDao.getCountByCids(ids);
+        int count2 = clueDao.deleteByCids(ids);
+
+        if (count1 != count2){
+            flag = false;
+        }
+        return flag;
     }
 }
