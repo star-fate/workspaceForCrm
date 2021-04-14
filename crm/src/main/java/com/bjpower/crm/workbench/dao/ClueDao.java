@@ -21,4 +21,8 @@ public interface ClueDao {
     int deleteByCids(String[] ids);
 
     int getCountByCids(String[] ids);
+
+    Clue detail(String id);
+
+
 }

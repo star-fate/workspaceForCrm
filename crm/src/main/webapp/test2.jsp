@@ -65,7 +65,7 @@ $("#activityBody").on("click",$("input[name=xz]"),function () {
 $("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length)
 })
 //复选框---end
-
+$("#qx").prop("checked",false);
 
 //jstl
 <c:forEach items="clueStateList" var="clueState">
@@ -96,9 +96,15 @@ pageList(data.currentPage, data.rowsPerPage);
 })
 
 
-
+//分页插件
 pageList($("#xxxPage").bs_pagination('getOption', 'currentPage')
 ,$("#xxxPage").bs_pagination('getOption', 'rowsPerPage'));
 
+
+//
+JSTL
+<c:forEach items="${xxxList}" var="xxx">
+    <option value="${xxx.value}">${xxx.text}</option>
+</c:forEach>
 </body>
 </html>

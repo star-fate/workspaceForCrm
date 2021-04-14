@@ -4,9 +4,20 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.bjpower.crm.workbench.dao.ClueActivityRelationDao">
-	
-	
-  	
+
+    <delete id="unbund">
+        delete from tbl_clue_activity_relation
+        where id = #{id}
+    </delete>
+    <insert id="bund">
+        insert into tbl_clue_activity_relation
+        values
+        <foreach collection="list" item="car" separator=",">
+            (#{car.id},#{car.clueId},#{car.activityId})
+        </foreach>
+    </insert>
+
+
 </mapper>
 
 

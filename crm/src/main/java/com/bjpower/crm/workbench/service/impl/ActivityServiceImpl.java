@@ -10,6 +10,7 @@ import com.bjpower.crm.settings.domain.User;
 import com.bjpower.crm.utils.SqlSessionUtil;
 import com.bjpower.crm.vo.PaginationVo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,28 @@ public class ActivityServiceImpl implements ActivityService{
             }
             return flag;
         }
+
+    @Override
+    public List<Activity> getActivityListByName(String aname) {
+        List<Activity> aList = activityDao.getActivityListByName(aname);
+        return aList;
+    }
+
+    @Override
+    public List<Activity> getActivityListByNameAndNotByClueId(Map<String, String> map) {
+
+        List<Activity> aList = activityDao.getActivityListByNameAndNotByClueId(map);
+
+        return aList;
+    }
+
+    @Override
+    public List<Activity> getActivityListByClueId(String id) {
+
+        List<Activity> aList = activityDao.getActivityListByClueId(id);
+
+        return aList;
+    }
 
     @Override
     public PaginationVo<Activity> pageList(Map<String, Object> map) {

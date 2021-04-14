@@ -289,7 +289,7 @@ request.getServerName() +":"+request.getServerPort()
 				$.each(data.dataList, function (i,n) {
 					html += '<tr class="active">';
 					html += '<td><input type="checkbox" value="'+n.id+'" name="xz"/></td>';
-					html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench\/clue\/detail.jsp?' + n.id + '\';">' + n.fullname + '</a></td>';
+					html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench\/clue\/detail.do?id=' + n.id + '\';">' + n.fullname + '</a></td>';
 					html += '<td>' + n.company + '</td>';
 					html += '<td>' + n.phone + '</td>';
 					html += '<td>' + n.mphone + '</td>';

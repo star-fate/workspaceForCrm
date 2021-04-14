@@ -54,8 +54,160 @@ request.getServerName() +":"+request.getServerPort()
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
+
+
+		//自己需要添加的功能
+		showActivityList();
+
+		//复选框---begin
+		$("#qx").click(function () {
+		//如果全选框的值为 checked 则 所有复选框的值均为 checked
+			$("input[name=xz]").prop("checked",this.checked)
+		})
+		//需要绑定元素的有效外层元素
+		// 		|			  	动作  需要绑定事件的jQuery对象   回调函数
+		$("#activitySearchBody").on("click",$("input[name=xz]"),function () {
+
+			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length)
+		})
+		//复选框---end
+		//新建关联关系
+		//1，新建关联关系按钮
+		$("#bundBtn").click(function () {
+			$("#bundModal").modal("show");
+			$("#aname").val("");
+			//取消选择按钮
+			$("#qx").prop("checked",false);
+			$("input[name=xz]").prop("checked",false);
+			$("#activitySearchBody").html("");
+
+		})
+		//2.查询信息
+
+
+
+		$("#aname").keydown(function (event) {
+			if (event.keyCode == 13){
+
+				$.ajax	({
+					url:"workbench/clue/getActivityListByNameAndNotByClueId.do",
+					data:{
+						"aname":$.trim($("#aname").val()),
+						"clueId":"${clue.id}"
+					},
+					type:"get",
+					dataType:"json",
+					success:function (data) {
+						//成功之后返回一个ActivityList
+						//注意为了删除简便 获取ID的时候获取的是
+						//关系表中的ID 而不是 activity 表中的ID
+						//三表联查
+						var html = "";
+						$.each(data,function (i,n) {
+							html += '<tr>';
+							html += '<td><input value="'+n.id+'" type="checkbox" name="xz"/></td>';
+							html += '<td>'+n.name+'</td>';
+							html += '<td>'+n.startDate+'</td>';
+							html += '<td>'+n.endDate+'</td>';
+							html += '<td>'+n.owner+'</td>';
+							html += '</tr>';
+						})
+						$("#activitySearchBody").html(html);
+
+					}
+				})
+				//展现完列表后，将模态窗口默认的行为禁止掉。
+				return false;
+			}
+		})
+		//3，保存新建关联关系
+		$("#bundSaveBtn").click(function () {
+			//需要的数据是  activityListId and clueId ?
+			var pram = "";
+			var $xz =  $("input[name=xz]:checked");
+			if ($xz.length == 0){
+				alert("请选择需要关联的市场活动");
+			}else {
+				for (var i = 0; i < $xz.length ; i++) {
+					pram += "aid="+$xz[i].value;
+					if (i<$xz.length-1){
+						pram += "&";
+					}
+				}
+				pram += "&cid="+"${clue.id}";
+				alert(pram);
+				$.ajax({
+					url:"workbench/clue/bund.do",
+					data:pram,
+					type:"post",
+					dataType:"json",
+					success:function (data) {
+						if (data.success){
+							showActivityList();
+						}else {
+							alert("绑定线索失败")
+						}
+					}
+				})
+
+			}
+		})
 	});
-	
+	//在页面加载完毕后取出关联的市场活动列表
+	function showActivityList() {
+		$.ajax({
+			url:"workbench/clue/getActivityListByClueId.do",
+			data:{
+				"id":"${clue.id}"
+			},
+			type:"get",
+			dataType:"json",
+			success:function (data) {
+				//成功之后返回一个ActivityList
+				//注意为了删除简便 获取ID的时候获取的是
+				//关系表中的ID 而不是 activity 表中的ID
+				//三表联查
+				var html = "";
+				$.each(data,function (i,n) {
+					html += '<tr id="r'+n.id+'">;'
+					html += '<td>'+n.name+'</td>;'
+					html += '<td>'+n.startDate+'</td>;'
+					html += '<td>'+n.endDate+'</td>;'
+					html += '<td>'+n.owner+'</td>;'
+					html += '<td><a href="javascript:void(0);" onclick="unbund(\''+n.id+'\')" style="text-decoration: none;" ><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>;'
+					html += '</tr>;'
+				})
+				$("#detailBody").html(html);
+
+
+
+			}
+		})
+	}
+
+
+
+	//删除关联关系函数  --->  根据ID
+	function unbund(id) {
+		$.ajax({
+			url:"workbench/clue/unbund.do",
+			data:{
+				"id":id
+			},
+			type:"post",
+			dataType:"json",
+			success:function (data) {
+				//返回一个 success 判断是否成功
+				if (data.success){
+					//如果成功则更新列表 移除这个模块
+					$("#r"+id).remove();
+				}else {
+					alert("移除关联关系失败")
+				}
+			}
+		})
+
+	}
 </script>
 
 </head>
@@ -75,7 +227,7 @@ request.getServerName() +":"+request.getServerPort()
 					<div class="btn-group" style="position: relative; top: 18%; left: 8px;">
 						<form class="form-inline" role="form">
 						  <div class="form-group has-feedback">
-						    <input type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
+						    <input type="text" class="form-control" id="aname" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
 						    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 						  </div>
 						</form>
@@ -83,7 +235,7 @@ request.getServerName() +":"+request.getServerPort()
 					<table id="activityTable" class="table table-hover" style="width: 900px; position: relative;top: 10px;">
 						<thead>
 							<tr style="color: #B3B3B3;">
-								<td><input type="checkbox"/></td>
+								<td><input id="qx" type="checkbox"/></td>
 								<td>名称</td>
 								<td>开始日期</td>
 								<td>结束日期</td>
@@ -91,27 +243,13 @@ request.getServerName() +":"+request.getServerPort()
 								<td></td>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
-								<td><input type="checkbox"/></td>
-								<td>发传单</td>
-								<td>2020-10-10</td>
-								<td>2020-10-20</td>
-								<td>zhangsan</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox"/></td>
-								<td>发传单</td>
-								<td>2020-10-10</td>
-								<td>2020-10-20</td>
-								<td>zhangsan</td>
-							</tr>
+						<tbody id="activitySearchBody">
 						</tbody>
 					</table>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">关联</button>
+					<button type="button" class="btn btn-primary" id="bundSaveBtn">关联</button>
 				</div>
 			</div>
 		</div>
@@ -192,7 +330,7 @@ request.getServerName() +":"+request.getServerPort()
                             </div>
                             <label for="edit-status" class="col-sm-2 control-label">线索状态</label>
                             <div class="col-sm-10" style="width: 300px;">
-                                <select class="form-control" id="edit-status">
+                                <select class="form-control" id="edit-state">
                                     <option></option>
                                     <option>试图联系</option>
                                     <option>将来联系</option>
@@ -281,10 +419,10 @@ request.getServerName() +":"+request.getServerPort()
 	<!-- 大标题 -->
 	<div style="position: relative; left: 40px; top: -30px;">
 		<div class="page-header">
-			<h3>李四先生 <small>动力节点</small></h3>
+			<h3>${clue.fullname}<small>${clue.company}</small></h3>
 		</div>
 		<div style="position: relative; height: 50px; width: 500px;  top: -72px; left: 700px;">
-			<button type="button" class="btn btn-default" onclick="window.location.href='workbench/clue/convert.jsp';"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
+			<button type="button" class="btn btn-default" onclick="window.location.href='workbench/clue/convert.jsp?cId=${clue.id}&appellation=${clue.appellation}&company=${clue.company}&owner=${clue.owner}&fullname=${clue.fullname}';"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span class="glyphicon glyphicon-edit"></span> 编辑</button>
 			<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 		</div>
@@ -294,59 +432,59 @@ request.getServerName() +":"+request.getServerPort()
 	<div style="position: relative; top: -70px;">
 		<div style="position: relative; left: 40px; height: 30px;">
 			<div style="width: 300px; color: gray;">名称</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>李四先生</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${clue.fullname}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">所有者</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>zhangsan</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${clue.owner}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 10px;">
 			<div style="width: 300px; color: gray;">公司</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>动力节点</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${clue.company}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">职位</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>CTO</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${clue.job}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 20px;">
 			<div style="width: 300px; color: gray;">邮箱</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>lisi@bjpowernode.com</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${clue.email}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">公司座机</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>010-84846003</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${clue.phone}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 30px;">
 			<div style="width: 300px; color: gray;">公司网站</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>http://www.bjpowernode.com</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${clue.website}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">手机</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>12345678901</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${clue.mphone}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 40px;">
 			<div style="width: 300px; color: gray;">线索状态</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>已联系</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${clue.state}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">线索来源</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>广告</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${clue.source}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 50px;">
 			<div style="width: 300px; color: gray;">创建者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>zhangsan&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">2017-01-18 10:10:10</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${clue.createBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${clue.createTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 60px;">
 			<div style="width: 300px; color: gray;">修改者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>zhangsan&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">2017-01-19 10:10:10</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${clue.editBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${clue.editTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 70px;">
 			<div style="width: 300px; color: gray;">描述</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
 				<b>
-					这是一条线索的描述信息
+					${clue.description}
 				</b>
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
@@ -355,21 +493,21 @@ request.getServerName() +":"+request.getServerPort()
 			<div style="width: 300px; color: gray;">联系纪要</div>
 			<div style="width: 630px;position: relative; left: 200px; top: -20px;">
 				<b>
-					这条线索即将被转换
+					${clue.contactSummary}
 				</b>
 			</div>
 			<div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 90px;">
 			<div style="width: 300px; color: gray;">下次联系时间</div>
-			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>2017-05-01</b></div>
+			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${clue.nextContactTime}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -20px; "></div>
 		</div>
         <div style="position: relative; left: 40px; height: 30px; top: 100px;">
             <div style="width: 300px; color: gray;">详细地址</div>
             <div style="width: 630px;position: relative; left: 200px; top: -20px;">
                 <b>
-                    北京大兴大族企业湾
+					${clue.address}
                 </b>
             </div>
             <div style="height: 1px; width: 850px; background: #D5D5D5; position: relative; top: -20px;"></div>
@@ -438,8 +576,10 @@ request.getServerName() +":"+request.getServerPort()
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="detailBody">
+
+						<%--市场活动列表--%>
+						<%--<tr>
 							<td>发传单</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
@@ -452,13 +592,15 @@ request.getServerName() +":"+request.getServerPort()
 							<td>2020-10-20</td>
 							<td>zhangsan</td>
 							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>
+						</tr>--%>
 					</tbody>
 				</table>
 			</div>
-			
+			<%--
+			data-toggle="modal" data-target="#bundModal"
+			--%>
 			<div>
-				<a href="javascript:void(0);" data-toggle="modal" data-target="#bundModal" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
+				<a href="javascript:void(0);" id="bundBtn" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>关联市场活动</a>
 			</div>
 		</div>
 	</div>
