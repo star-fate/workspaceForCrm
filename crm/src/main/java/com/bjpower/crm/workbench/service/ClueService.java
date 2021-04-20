@@ -4,6 +4,7 @@ import com.bjpower.crm.settings.domain.User;
 import com.bjpower.crm.vo.PaginationVo;
 import com.bjpower.crm.workbench.domain.Clue;
 import com.bjpower.crm.workbench.domain.ClueActivityRelation;
+import com.bjpower.crm.workbench.domain.Tran;
 
 import java.util.List;
 import java.util.Map;
@@ -26,5 +27,7 @@ public interface ClueService {
     boolean unbund(String id);
 
     boolean bund(List<ClueActivityRelation> cars);
+
+    boolean convert(String cId, Tran t, String createBy);
 
 }

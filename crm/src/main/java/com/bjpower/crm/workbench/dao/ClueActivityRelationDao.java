@@ -10,4 +10,8 @@ public interface ClueActivityRelationDao {
 
 
     int bund(List<ClueActivityRelation> cars);
+
+    List<ClueActivityRelation> getListByClueId(String cId);
+
+    int delete(String id);
 }

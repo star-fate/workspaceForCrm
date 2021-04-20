@@ -88,7 +88,23 @@
     <url-pattern>/workbench/clue/getActivityListByName.do</url-pattern>
     <url-pattern>/workbench/clue/convert.do</url-pattern>
   </servlet-mapping>
-  
+
+
+  <!--
+    交易控制器
+  -->
+  <servlet>
+    <servlet-name>TranController</servlet-name>
+    <servlet-class>com.bjpower.crm.workbench.web.controller.TranController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TranController</servlet-name>
+    <url-pattern>/workbench/transaction/add.do</url-pattern>
+    <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
+    <url-pattern>/workbench/transaction/getActivityListByName.do</url-pattern>
+    <url-pattern>/workbench/transaction/getContactListByName.do</url-pattern>
+  </servlet-mapping>
+
   
 </web-app>
 

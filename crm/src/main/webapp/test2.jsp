@@ -101,10 +101,36 @@ pageList($("#xxxPage").bs_pagination('getOption', 'currentPage')
 ,$("#xxxPage").bs_pagination('getOption', 'rowsPerPage'));
 
 
-//
-JSTL
+//            EL表达式从application   变量
 <c:forEach items="${xxxList}" var="xxx">
     <option value="${xxx.value}">${xxx.text}</option>
 </c:forEach>
 </body>
 </html>
+
+
+线索转换使用 当有交易时:表单提交 没有交易时:window.location.href = "workbench/clue/convert.do?cId=${param.cId}"
+
+$("#convertBtn").click(function () {
+
+    if ($("#isCreateTransaction").prop("checked")){
+
+        //获取参数  workbench/clue/convert.do
+
+        $("#tranForm").submit();
+    }else {
+        window.location.href = "workbench/clue/convert.do?cId=${param.cId} "
+    }
+
+})
+分析：转换的实现步骤？
+(1) 获取到线索id，通过线索id获取线索对象（线索对象当中封装了线索的信息）
+(2) 通过线索对象提取客户信息，当该客户不存在的时候，新建客户（根据公司的名称精确匹配，判断该客户是否存在！）
+(3) 通过线索对象提取联系人信息，保存联系人
+(4) 线索备注转换到客户备注以及联系人备注
+(5) “线索和市场活动”的关系转换到“联系人和市场活动”的关系
+(6) 如果有创建交易需求，创建一条交易
+(7) 如果创建了交易，则创建一条该交易下的交易历史
+(8) 删除线索备注
+(9) 删除线索和市场活动的关系
+(10) 删除线索

@@ -33,6 +33,7 @@ public class TransactionInvocationHandler  implements InvocationHandler {
         }
         return res;
     }
+    //返回类型为Object
     public Object getProxy(){
         return Proxy.newProxyInstance(
                 target.getClass().getClassLoader(),

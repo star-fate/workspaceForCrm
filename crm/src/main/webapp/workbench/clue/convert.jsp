@@ -11,22 +11,33 @@ request.getServerName() +":"+request.getServerPort()
 <head>
 	<base href="<%=basePath%>">
 	<meta charset="UTF-8">
-<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+	<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+	<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+
+	<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 
-<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
-<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
 	$(function(){
+
+		$(".time").datetimepicker({
+			minView: "month",
+			language: 'zh-CN',
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "top-left"
+		});
+
 		$("#isCreateTransaction").click(function(){
 			if(this.checked){
-				$("#create-transaction2").show(200);
+				$("#tranForm").show(200);
 			}else{
-				$("#create-transaction2").hide(200);
+				$("#tranForm").hide(200);
 			}
 		});
 
@@ -58,6 +69,8 @@ request.getServerName() +":"+request.getServerPort()
 
 					}
 				})
+				//避免点击enter然后页面刷新丢失数据
+				//请求转发的页面都需要注意这个
 				return false;
 			}
 		})
@@ -71,16 +84,14 @@ request.getServerName() +":"+request.getServerPort()
 			$("#searchActivityModal").modal("hide");
 
 		})
-
 		//转换线索
 		$("#convertBtn").click(function () {
 
 			if ($("#isCreateTransaction").prop("checked")){
 				//获取参数  workbench/clue/convert.do
-
-				$("#tranForm").submit();
+				$("#tranForm form").submit();
 			}else {
-				window.location.href = "workbench/clue/convert.do?cId=${param.cId} "
+				window.location.href = "workbench/clue/convert.do?cId=${param.cId}"
 			}
 
 		})
@@ -159,9 +170,9 @@ request.getServerName() +":"+request.getServerPort()
 		<input type="checkbox" id="isCreateTransaction"/>
 		为客户创建交易
 	</div>
-	<div  id="tranForm" style="position: relative; left: 40px; top: 20px; width: 80%; background-color: #F7F7F7; display: none;" >
+	<div id="tranForm" style="position: relative; left: 40px; top: 20px; width: 80%; background-color: #F7F7F7; display: none;" >
 	
-		<form action="workbench/clue/convert.do" method="post">
+		<form  action="workbench/clue/convert.do" method="post">
 			<input type="hidden" name="flag" value="a">
 			<input type="hidden" name="cId" value="${param.cId}">
 		  <div class="form-group" style="width: 400px; position: relative; left: 20px;">
@@ -174,7 +185,7 @@ request.getServerName() +":"+request.getServerPort()
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="expectedClosingDate">预计成交日期</label>
-		    <input type="text" class="form-control" name="expectedDate" id="expectedDate">
+		    <input type="text" class="form-control time" name="expectedDate" id="expectedDate">
 		  </div>
 		  <div class="form-group" style="width: 400px;position: relative; left: 20px;">
 		    <label for="stage">阶段</label>

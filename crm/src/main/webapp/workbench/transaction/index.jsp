@@ -4,6 +4,13 @@ String basePath = request.getScheme() + "://" +
 request.getServerName() +":"+request.getServerPort()
 +request.getContextPath()+"/";
 %>
+
+<%--
+	将在 application 域中的 阶段可能性 保存到 json 数组中
+	使用foreach来完成json字符串的传入
+--%>
+
+
 <!DOCTYPE html>
 <html>
 
@@ -22,9 +29,25 @@ request.getServerName() +":"+request.getServerPort()
 <script type="text/javascript">
 
 	$(function(){
-		
-		
-		
+		$(".time1").datetimepicker({
+			minView: "month",
+			language: 'zh-CN',
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "bottom-left"
+		});
+		$(".time2").datetimepicker({
+			minView: "month",
+			language: 'zh-CN',
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "top-left"
+		});
+
+
+
 	});
 	
 </script>
@@ -136,7 +159,7 @@ request.getServerName() +":"+request.getServerPort()
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 10px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" onclick="window.location.href='workbench/transaction/save.jsp';"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" class="btn btn-primary" onclick="window.location.href='workbench/transaction/add.do';"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" onclick="window.location.href='workbench/transaction/edit.html';"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>

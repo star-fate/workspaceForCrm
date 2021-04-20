@@ -1,13 +1,11 @@
-package com.bjpower.crm.workbench.dao;
+package com.bjpower.crm.workbench.service;
 
 import com.bjpower.crm.workbench.domain.Contacts;
 
 import java.util.List;
 
-public interface ContactsDao {
+public interface ContactsService {
 
-    int save(Contacts contact);
 
     List<Contacts> getContactListByName(String cname);
-
 }

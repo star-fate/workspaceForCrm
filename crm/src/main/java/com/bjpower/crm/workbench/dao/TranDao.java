@@ -1,5 +1,7 @@
 package com.bjpower.crm.workbench.dao;
 
-public interface TranDao {
+import com.bjpower.crm.workbench.domain.Tran;
 
+public interface TranDao {
+    int save(Tran t);
 }

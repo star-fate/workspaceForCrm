@@ -8,10 +8,7 @@ import com.bjpower.crm.utils.PrintJson;
 import com.bjpower.crm.utils.UUIDUtil;
 import com.bjpower.crm.utils.serviceFactory;
 import com.bjpower.crm.vo.PaginationVo;
-import com.bjpower.crm.workbench.domain.Activity;
-import com.bjpower.crm.workbench.domain.ActivityRemark;
-import com.bjpower.crm.workbench.domain.Clue;
-import com.bjpower.crm.workbench.domain.ClueActivityRelation;
+import com.bjpower.crm.workbench.domain.*;
 import com.bjpower.crm.workbench.service.ActivityService;
 import com.bjpower.crm.workbench.service.ClueService;
 import com.bjpower.crm.workbench.service.impl.ActivityServiceImpl;
@@ -21,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.ActionMapUIResource;
 import java.io.IOException;
 import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
@@ -63,15 +61,47 @@ public class ClueController extends HttpServlet {
             convert(request,response);
         }
     }
-
-    private void convert(HttpServletRequest request, HttpServletResponse response) {
+    //线索转换操作
+    private void convert(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String cId = request.getParameter("cId");
+        //用于判断是否添加交易
         String flag = request.getParameter("flag");
+        Tran t = null;
+
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+        //根据flag来判断是否  添加交易
         if ("a".equals(flag)){
             //获取其他的参数
-
-            //以后再写吧
+            String expectedDate = request.getParameter("expectedDate");
+            String name = request.getParameter("name");
+            String money = request.getParameter("money");
+            String stage = request.getParameter("stage");
+            String activityId = request.getParameter("activityId");
+            //另外需要获取创建时间 和 创建人
+            String id = UUIDUtil.getUUID();
+            String createTime = DateTimeUtil.getSysTime();
+            //之后的业务也需要创建人的名字  但是呢 request 不能出现在 控制层之外的地方 为了遵守  MVC
+            //String createBy = ((User)request.getSession().getAttribute("user")).getName();
+            //将得到的参数封装为一个
+            t = new Tran();
+            t.setId(id);
+            t.setName(name);
+            t.setMoney(money);
+            t.setStage(stage);
+            t.setActivityId(activityId);
+            t.setExpectedDate(expectedDate);
+            t.setCreateBy(createBy);
+            t.setCreateTime(createTime);
         }
+
+        ClueService cs = (ClueService) serviceFactory.getService(new ClueServiceImpl());
+
+        boolean flag1 = cs.convert(cId,t,createBy);
+        if (flag1){
+            //如果成功转移到
+            response.sendRedirect(request.getContextPath()+"/workbench/clue/index.jsp");
+        }
+
     }
 
     private void getActivityListByName(HttpServletRequest request, HttpServletResponse response) {

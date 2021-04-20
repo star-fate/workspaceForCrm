@@ -20,8 +20,8 @@ String basePath = request.getScheme() + "://" +
 				window.top.location = window.location;
 			}
 			//页面加载完毕后，将用户文本框的内容清空
-			$("loginAct").val("");
-			$("loginPwd").val("");
+			$("#loginAct").val("");
+			$("#loginPwd").val("");
 			//使用Jquery做一个总动获取焦点
 			$("#loginAct").focus();
 			$("#submitBtn").click(function () {

@@ -5,7 +5,53 @@
 
 <mapper namespace="com.bjpower.crm.workbench.dao.ContactsDao">
 	
-  	
+    <insert id="save">
+        insert into tbl_contacts
+        (
+            id,
+            owner,
+            source,
+            customerId,
+            fullname,
+            appellation,
+            email,
+            mphone,
+            job,
+            birth,
+            createBy,
+            createTime,
+            description,
+            contactSummary,
+            nextContactTime,
+            address
+        )
+        values
+        (
+            #{id},
+            #{owner},
+            #{source},
+            #{customerId},
+            #{fullname},
+            #{appellation},
+            #{email},
+            #{mphone},
+            #{job},
+            #{birth},
+            #{createBy},
+            #{createTime},
+            #{description},
+            #{contactSummary},
+            #{nextContactTime},
+            #{address}
+        );
+    </insert>
+    <!--
+        根据传入的联系人名模糊查询
+    -->
+    <select id="getContactListByName" resultType="Contacts">
+        select * from tbl_contacts
+        where fullname like '%' #{cname} '%'
+    </select>
 </mapper>
 
 
