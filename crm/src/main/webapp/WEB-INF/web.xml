@@ -103,9 +103,9 @@
     <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
     <url-pattern>/workbench/transaction/getActivityListByName.do</url-pattern>
     <url-pattern>/workbench/transaction/getContactListByName.do</url-pattern>
+    <url-pattern>/workbench/transaction/save.do</url-pattern>
   </servlet-mapping>
 
-  
 </web-app>
 
 
