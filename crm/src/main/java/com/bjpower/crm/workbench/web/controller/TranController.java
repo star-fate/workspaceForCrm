@@ -4,10 +4,9 @@ import com.bjpower.crm.settings.domain.User;
 import com.bjpower.crm.settings.service.UserService;
 import com.bjpower.crm.settings.service.impl.UserServiceImpl;
 import com.bjpower.crm.utils.*;
-import com.bjpower.crm.workbench.domain.Activity;
-import com.bjpower.crm.workbench.domain.Contacts;
-import com.bjpower.crm.workbench.domain.Customer;
-import com.bjpower.crm.workbench.domain.Tran;
+import com.bjpower.crm.vo.PaginationVo;
+import com.bjpower.crm.workbench.dao.TranHistoryDao;
+import com.bjpower.crm.workbench.domain.*;
 import com.bjpower.crm.workbench.service.ActivityService;
 import com.bjpower.crm.workbench.service.ContactsService;
 import com.bjpower.crm.workbench.service.CustomerService;
@@ -23,7 +22,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 public class TranController extends HttpServlet {
 
@@ -42,8 +41,120 @@ public class TranController extends HttpServlet {
             getContactListByName(request,response);
         }else if ("/workbench/transaction/save.do".equals(path)) {
             save(request,response);
+        }else if ("/workbench/transaction/pageList.do".equals(path)) {
+            pageList(request,response);
+        }else if ("/workbench/transaction/detail.do".equals(path)) {
+            detail(request,response);
+        }else if ("/workbench/transaction/showTranHistory.do".equals(path)) {
+            showTranHistory(request,response);
+        }else if ("/workbench/transaction/changeStage.do".equals(path)) {
+            changeStage(request,response);
+        }else if ("/workbench/transaction/myCharts.do".equals(path)) {
+            myCharts(request,response);
         }
 
+
+    }
+
+    private void myCharts(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入到绘制eCharts图 返回数据阶段");
+
+        TranService ts = (TranService) serviceFactory.getService(new TranServiceImpl());
+        Map<String,Object> map = ts.myCharts();
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void changeStage(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入到交易状态修改操作");
+        String id= request.getParameter("id");
+        String money = request.getParameter("money");
+        String stage = request.getParameter("stage");
+        String expectedDate = request.getParameter("expectedDate");
+
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editTime = DateTimeUtil.getSysTime();
+
+        //交易历史新加一条数据 交易操作修改数据
+        //因为其需要在控制器中拿到 session 中的 user
+        Tran t = new Tran();
+        t.setId(id);
+        t.setMoney(money);
+        t.setStage(stage);
+        t.setExpectedDate(expectedDate);
+        t.setEditBy(editBy);
+        t.setEditTime(editTime);
+
+        TranService ts = (TranService) serviceFactory.getService(new TranServiceImpl());
+        boolean flag = ts.changeStage(t);
+        //还需要可能性
+        Map<String,String> pMap = (Map<String, String>) this.getServletContext().getAttribute("pMap");
+        t.setPossibility(pMap.get(t.getStage()));
+        Map<String,Object> map = new HashMap<>();
+        map.put("success",flag);
+        map.put("t",t);
+        PrintJson.printJsonObj(response,map);
+
+    }
+
+
+    private void showTranHistory(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入到交易历史查询操作");
+        String id = request.getParameter("id");
+        TranService ts = (TranService) serviceFactory.getService(new TranServiceImpl());
+        List<TranHistory> thList = ts.showTranHistory(id);
+        Map<String,String> pMap = (Map<String, String>) this.getServletContext().getAttribute("pMap");
+        for (TranHistory th:thList){
+            th.setPossibility(pMap.get(th.getStage()));
+        }
+        PrintJson.printJsonObj(response,thList);
+
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //
+        System.out.println("进入到交易详细信息页面操作中");
+        String id = request.getParameter("id");
+        //根据ID信息查询交易表 将数据保存在request域中
+        //需要 转换的 owner customerId activityId contactsId
+        TranService ts = (TranService) serviceFactory.getService(new TranServiceImpl());
+        Tran tran = ts.detail(id);
+        Map<String,String> pMap = (Map<String, String>) this.getServletContext().getAttribute("pMap");
+        String possibility = pMap.get(tran.getStage());
+        tran.setPossibility(possibility);
+        request.setAttribute("tran",tran);
+        request.getRequestDispatcher("/workbench/transaction/detail.jsp").forward(request,response);
+    }
+
+    private void pageList(HttpServletRequest request, HttpServletResponse response) {
+        //接收数据 处理页面信息
+        String pageNoStr = request.getParameter("pageNo");
+        String pageSizeStr = request.getParameter("pageSize");
+        String owner = request.getParameter("owner");
+        String name = request.getParameter("name");
+        String customerName = request.getParameter("customerName");
+        String contactsName = request.getParameter("contactsName");
+        String stage = request.getParameter("stage");
+        String type = request.getParameter("type");
+        String source = request.getParameter("source");
+
+        //skipCount
+        int pageSize = Integer.valueOf(pageSizeStr);
+        int skipCount = (Integer.valueOf(pageNoStr)-1)*Integer.valueOf(pageSizeStr);
+        //将数据封装为一个Map
+        Map<String,Object> map = new HashMap<>();
+        map.put("pageSize",pageSize);
+        map.put("skipCount",skipCount);
+        map.put("owner",owner);
+        map.put("name",name);
+        map.put("customerName",customerName);
+        map.put("contactsName",contactsName);
+        map.put("stage",stage);
+        map.put("type",type);
+        map.put("source",source);
+        //将传回的vo接收 返回到 页面
+        TranService ts = (TranService) serviceFactory.getService(new TranServiceImpl());
+        PaginationVo<Tran> tVo = ts.pageList(map);
+        PrintJson.printJsonObj(response,tVo);
 
     }
 

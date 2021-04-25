@@ -3,10 +3,15 @@ package com.bjpower.crm.workbench.service.impl;
 import com.bjpower.crm.utils.DateTimeUtil;
 import com.bjpower.crm.utils.SqlSessionUtil;
 import com.bjpower.crm.utils.UUIDUtil;
+import com.bjpower.crm.vo.PaginationVo;
 import com.bjpower.crm.workbench.dao.*;
 import com.bjpower.crm.workbench.domain.*;
 import com.bjpower.crm.workbench.service.TranService;
-import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
+
+import javax.swing.plaf.basic.BasicScrollPaneUI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TranServiceImpl implements TranService {
     private TranDao tranDao = SqlSessionUtil.getSession().getMapper(TranDao.class);
@@ -55,5 +60,71 @@ public class TranServiceImpl implements TranService {
             flag = false;
         }
         return flag;
+    }
+
+    @Override
+    public PaginationVo<Tran> pageList(Map<String, Object> map) {
+        //分析需要返回的数据  total  以及  tranList
+        int total = tranDao.getTotalCondition(map);
+        //根据Map中的信息查询
+        List<Tran> tranList = tranDao.getListByCondition(map);
+
+        PaginationVo<Tran> tVo = new PaginationVo<>();
+        tVo.setTotal(total);
+        tVo.setDataList(tranList);
+        return tVo;
+    }
+
+    @Override
+    public Tran detail(String id) {
+        Tran t = tranDao.detail(id);
+        return t;
+    }
+
+    @Override
+    public List<TranHistory> showTranHistory(String id) {
+
+        List<TranHistory> thList = tranHistoryDao.showTranHistory(id);
+
+        return thList;
+    }
+
+    @Override
+    public boolean changeStage(Tran t) {
+        boolean flag = true;
+        int count = tranDao.changeStage(t);
+        if (count != 1){
+            flag = false;
+        }
+        //添加交易历史
+        TranHistory th = new TranHistory();
+        th.setId(UUIDUtil.getUUID());
+        th.setStage(t.getStage());
+        th.setMoney(t.getMoney());
+        th.setExpectedDate(t.getExpectedDate());
+        th.setCreateBy(t.getEditBy());
+        th.setCreateTime(t.getEditTime());
+        th.setTranId(t.getId());
+
+        int count2 = tranHistoryDao.save(th);
+        if (count2 != 1){
+            flag = false;
+        }
+        return flag;
+    }
+
+    @Override
+    public Map<String, Object> myCharts() {
+        //返回统计的条数
+        int total = tranDao.getTotal();
+        //返回分组统计的数据
+        List<Map<String,String>> dataList = tranDao.getGroupList();
+
+        Map<String,Object> map = new HashMap<>();
+
+        map.put("total",total);
+        map.put("dataList",dataList);
+
+        return map;
     }
 }

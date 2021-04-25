@@ -130,7 +130,7 @@ request.getServerName() +":"+request.getServerPort()
 							$.each(data,function (i,n) {
 										html += '<tr>';
 										html += '<td><input type="radio" name="activity" value="'+n.id+'"/></td>';
-										html += '<td>'+n.name+'</td>';
+										html += '<td id="a'+n.id+'">'+n.name+'</td>';
 										html += '<td>'+n.startDate+'</td>';
 										html += '<td>'+n.endDate+'</td>';
 										html += '<td>'+n.owner+'</td>';
@@ -163,7 +163,7 @@ request.getServerName() +":"+request.getServerPort()
 							$.each(data,function (i,n) {
 								html += '<tr>';
 								html += '<td><input type="radio" name="contact" value="'+n.id+'"/></td>';
-								html += '<td>'+n.fullname+'</td>';
+								html += '<td id="c'+n.id+'">'+n.fullname+'</td>';
 								html += '<td>'+n.email+'</td>';
 								html += '<td>'+n.mphone+'</td>';
 								html += '</tr>';
@@ -192,10 +192,13 @@ request.getServerName() +":"+request.getServerPort()
 				//点击选择 则将值保存在 隐藏域中
 				var activityId = $("input[name='activity']:checked").val()
 				$("#hidden-activity").val(activityId);
+				//将选择数据的名字 填充到 框中
+				$("#create-activityId").val($("#a"+activityId).html());
 				$("#findMarketActivity").modal("hide");
 			})
 			$("#submitContactBtn").click(function () {
 				var contactId = $("input[name='contact']:checked").val()
+				$("#create-contactsId").val($("#c"+contactId).html());
 				$("#hidden-contact").val(contactId);
 				$("#findContacts").modal("hide");
 			})

@@ -104,6 +104,12 @@
     <url-pattern>/workbench/transaction/getActivityListByName.do</url-pattern>
     <url-pattern>/workbench/transaction/getContactListByName.do</url-pattern>
     <url-pattern>/workbench/transaction/save.do</url-pattern>
+    <url-pattern>/workbench/transaction/pageList.do</url-pattern>
+    <url-pattern>/workbench/transaction/detail.do</url-pattern>
+    <url-pattern>/workbench/transaction/showTranHistory.do</url-pattern>
+    <url-pattern>/workbench/transaction/changeStage.do</url-pattern>
+    <url-pattern>/workbench/transaction/myCharts.do</url-pattern>
+
   </servlet-mapping>
 
 </web-app>
